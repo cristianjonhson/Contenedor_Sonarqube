@@ -2,7 +2,7 @@ version: '3.8'
 
 services:
   sonarqube:
-    image: sonarqube:latest
+    image: sonarqube:10.6  # Puedes especificar la versión aquí
     container_name: sonarqube
     ports:
       - "9000:9000"
@@ -16,6 +16,11 @@ services:
       - SONARQUBE_JAVA_OPTS=-Xms512m -Xmx512m
     depends_on:
       - db
+    volumes:
+      - sonarqube_data:/opt/sonarqube/data  # Volumen persistente para los datos de SonarQube
+      - sonarqube_logs:/opt/sonarqube/logs  # Volumen persistente para los logs de SonarQube
+      - sonarqube_extensions:/opt/sonarqube/extensions  # Volumen persistente para las extensiones
+      - sonarqube_conf:/opt/sonarqube/conf  # Volumen persistente para las configuraciones
 
   db:
     image: postgres:12
@@ -26,6 +31,16 @@ services:
       - POSTGRES_DB=sonarqube
     networks:
       - sonarnet
+    volumes:
+      - postgres_data:/var/lib/postgresql/data  # Volumen persistente para la base de datos de PostgreSQL
 
 networks:
   sonarnet:
+    driver: bridge
+
+volumes:
+  sonarqube_data:  # Volumen persistente para SonarQube
+  sonarqube_logs:  # Volumen persistente para los logs de SonarQube
+  sonarqube_extensions:  # Volumen persistente para las extensiones de SonarQube
+  sonarqube_conf:  # Volumen persistente para las configuraciones de SonarQube
+  postgres_data:  # Volumen persistente para la base de datos de PostgreSQL
