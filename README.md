@@ -4,7 +4,7 @@ Este proyecto configura un entorno de SonarQube en contenedores Docker, con una 
 
 ## Estructura del Proyecto
 
-- `docker-compose.yml`: Define los servicios de SonarQube y PostgreSQL, configurando redes y variables de entorno necesarias para la ejecución.
+- `docker-compose.yml`: Define los servicios de SonarQube y PostgreSQL, configurando redes y volúmenes persistentes para los datos.
 
 ## Contenido del `docker-compose.yml`
 
@@ -18,11 +18,18 @@ El archivo `docker-compose.yml` define dos servicios principales:
   - Configura variables de entorno relacionadas con la conexión a la base de datos PostgreSQL.
   - La configuración incluye opciones de memoria para SonarQube y Elasticsearch a través de `SONARQUBE_ES_JAVA_OPTS` y `SONARQUBE_JAVA_OPTS`.
   - Depende del servicio `db` (PostgreSQL), por lo que espera que la base de datos esté en funcionamiento antes de iniciar.
+  - Se ha configurado un volumen persistente para los datos, logs, configuraciones y extensiones de SonarQube, de modo que los datos no se pierdan al reiniciar o recrear el contenedor.
   
 - **db**:
   - Usa la imagen `postgres:12` para configurar la base de datos PostgreSQL.
   - Establece las credenciales de la base de datos (`POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`) para la conexión desde SonarQube.
   - Está conectado a la misma red `sonarnet` que el servicio SonarQube para permitir la comunicación entre ambos servicios.
+  - Se ha configurado un volumen persistente para los datos de la base de datos PostgreSQL.
+
+### Volúmenes
+
+- **sonarqube_data**: Volumen persistente para almacenar los datos, logs y configuraciones de SonarQube.
+- **postgres_data**: Volumen persistente para almacenar los datos de la base de datos PostgreSQL.
 
 ### Redes
 
@@ -73,7 +80,7 @@ Asegúrate de tener Docker y Docker Compose instalados en tu sistema.
    docker-compose down
    ```
 
-   Esto detendrá y eliminará los contenedores, pero preservará los datos de SonarQube almacenados en el volumen de la base de datos.
+   Esto detendrá y eliminará los contenedores, pero preservará los datos de SonarQube y PostgreSQL almacenados en los volúmenes persistentes.
 
 ### Variables de Entorno
 
